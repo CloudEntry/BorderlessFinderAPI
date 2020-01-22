@@ -5,41 +5,38 @@ from time import strptime
 
 app = Flask(__name__)
 
-events = []
-eventsDetail = []
-
-conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
-c = conn.cursor()
-c.execute("SELECT * FROM events;")
-# select name, society, date, time, location, type, replace(description,X'0A',' '), url from events
-id_num = 0
-for row in c.fetchall():
-    id_num += 1
-    events.append({'id': id_num,
-                   'name': row[0],
-                   'society': row[1],
-                   'location': row[2],
-                   'type': row[3],
-                   'date': row[5],
-                   'time': row[6]})
-    eventsDetail.append({'url': row[7],
-                         'lat': u'53.406566',
-                         'lon': u'-2.966531',
-                         'description': row[4]})
-conn.close()
-
 
 @app.route('/api/v1.0/events', methods=['GET'])
 def get_events():
+    events = []
+    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    c = conn.cursor()
+    c.execute("SELECT name, society, location, type, date, time FROM events;")
+    # select name, society, date, time, location, type, replace(description,X'0A',' '), url from events
+    id_num = 0
+    for row in c.fetchall():
+        id_num += 1
+        events.append({'id': id_num,
+                       'name': row[0],
+                       'society': row[1],
+                       'location': row[2],
+                       'type': row[3],
+                       'date': row[4],
+                       'time': row[5]})
     return jsonify({'events': events})
 
 
 @app.route('/api/v1.0/events/info/<int:event_id>', methods=['GET'])
 def get_event_detail(event_id):
-    event = [eventsDetail[int(event_id)-1]]
-    if len(event) == 0:
-        abort(404)
-    return jsonify({'event': event})
+    event_detail = []
+    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    c = conn.cursor()
+    c.execute("SELECT url, description FROM events where rowid = %s;" % str(event_id))
+    # select name, society, date, time, location, type, replace(description,X'0A',' '), url from events
+    row = c.fetchone()
+    event_detail.append({'url': row[0], 'lat': u'53.406566', 'lon': u'-2.966531', 'description': row[1]})
+    conn.close()
+    return jsonify({'event': event_detail[0]})
 
 
 @app.route('/api/v1.0/events', methods=['POST'])
@@ -64,24 +61,22 @@ def create_event():
     return jsonify({'successful': "yes"}), 201
 
 
-users = []
-conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
-c = conn.cursor()
-c.execute("SELECT * FROM users;")
-id_num = 0
-for row in c.fetchall():
-    id_num += 1
-    users.append({'id': id_num,
-                  'email': row[0],
-                  'password': row[1],
-                  'first_name': row[2],
-                  'surname': row[3],
-                  'society_admin': row[4]})
-conn.close()
-
-
 @app.route('/api/v1.0/users', methods=['GET'])
 def get_users():
+    users = []
+    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users;")
+    id_num = 0
+    for row in c.fetchall():
+        id_num += 1
+        users.append({'id': id_num,
+                      'email': row[0],
+                      'password': row[1],
+                      'first_name': row[2],
+                      'surname': row[3],
+                      'society_admin': row[4]})
+    conn.close()
     return jsonify({'users': users})
 
 
