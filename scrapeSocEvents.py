@@ -37,13 +37,13 @@ for event in soup.findAll('a', {'class': 'event-box'}):
     plain_text = driver.page_source
     soup = BeautifulSoup(plain_text, 'lxml')
 
-    name_text = soup.find('h2').getText().strip().replace('\'', ' ').replace('\"', ' ')
-    soc_text = soup.find('div', {'class': 'title'}).find('h1').getText().strip().replace('\'', ' ').replace('\"', ' ')
-    loc_text = soup.find('span', {'class': 'eventVenue'}).getText().strip().replace('\'', ' ').replace('\"', ' ')
+    name_text = soup.find('h2').getText().strip().replace('\'', '’')
+    soc_text = soup.find('div', {'class': 'title'}).find('h1').getText().strip().replace('\'', '’')
+    loc_text = soup.find('span', {'class': 'eventVenue'}).getText().strip().replace('\'', '’')
     type_text = 'Society event'
     desc_text = ''
     for p in soup.find('div', {'class': 'contentBoxes'}).findAll('p'):
-        desc_text += p.getText().strip().replace('\'', ' ').replace('\"', ' ')
+        desc_text += p.getText().strip().replace('\'', '’')
 
     dateTimeStr = soup.find('span', {'class': 'eventDateTime'}).getText().strip()
     dtarr = dateTimeStr.split()
@@ -58,9 +58,9 @@ for event in soup.findAll('a', {'class': 'event-box'}):
         print('Skip adding this event...')
     else:
         print('Adding this event...')
-        c.execute("INSERT INTO events(name,society,location,type,description,date,time,url) VALUES ('%s','%s','%s','%s','%s',date('%s'),'%s','%s');" \
-                  % (name_text,soc_text,loc_text,type_text,desc_text,date_text,time_text,eventUrl))
-        conn.commit()
+        # c.execute("INSERT INTO events(name,society,location,type,description,date,time,url) VALUES ('%s','%s','%s','%s','%s',date('%s'),'%s','%s');" \
+        #           % (name_text,soc_text,loc_text,type_text,desc_text,date_text,time_text,eventUrl))
+        # conn.commit()
 
         print('name: ' + name_text)
         print('society: ' + soc_text)

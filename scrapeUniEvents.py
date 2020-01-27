@@ -51,13 +51,13 @@ for link in main_content.findAll('a'):
     date_text = ''
     time_text = ''
 
-    name_text = name.getText().strip().replace('\'', '').replace('\"', '')
+    name_text = name.getText().strip().replace('\'', '’')
     if series is not None:
         soc_text = series.getText().strip()
     loc_text = 'University of liverpool'
     type_text = evtype.getText().strip()
     if desc is not None:
-        desc_text = desc.getText().strip().replace('\'', ' ').replace('\"', ' ')
+        desc_text = desc.getText().strip().replace('\'', '’')
     date_text = format_date(date.getText().strip())
     time_text = format_time(timeFrom.getText().strip()+'-'+timeTo.getText().strip())
 

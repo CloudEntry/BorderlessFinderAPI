@@ -1,17 +1,18 @@
 #!flask/bin/python
 from flask import Flask, jsonify, abort, make_response, request
+# from flask_cors import CORS
 import sqlite3
-from time import strptime
 
 app = Flask(__name__)
+# CORS(app)
 
 
 @app.route('/api/v1.0/events', methods=['GET'])
 def get_events():
     events = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')  # /home/borderlessfinder/borderless_finder.db
     c = conn.cursor()
-    c.execute("SELECT name, society, location, type, date, time FROM events;")
+    c.execute("SELECT name, society, location, type, date, time, url FROM events order by date, time;")
     # select name, society, date, time, location, type, replace(description,X'0A',' '), url from events
     id_num = 0
     for row in c.fetchall():
@@ -22,7 +23,8 @@ def get_events():
                        'location': row[2],
                        'type': row[3],
                        'date': row[4],
-                       'time': row[5]})
+                       'time': row[5],
+                       'url': row[6]})
     return jsonify({'events': events})
 
 
@@ -91,11 +93,28 @@ def create_users():
     soc_admin_text = ''
     if email_text.endswith('@society.liverpoolguild.org'):
         soc_admin_text = email_text.split('@')[0]
-    c2.execute("INSERT INTO user(email,password,first_name,surname,society_admin) VALUES ('%s','%s','%s','%s','%s');" \
+    c2.execute("INSERT INTO users(email,password,first_name,surname,society_admin) VALUES ('%s','%s','%s','%s','%s');" \
                % (email_text, password_text, first_name_text, surname_text, soc_admin_text))
     conn2.commit()
     conn2.close()
     return jsonify({'successful': "yes"}), 201
+
+
+@app.route('/api/v1.0/timetable/<c_code>', methods=['GET'])
+def get_timetable(c_code):
+    timetable = []
+    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    c = conn.cursor()
+    c.execute("SELECT title, date, time, location FROM lecture_timetable where c_code = '%s' order by date, time;" % c_code)
+    id_num = 0
+    for row in c.fetchall():
+        id_num += 1
+        timetable.append({'id': id_num,
+                       'title': row[0],
+                       'date': row[1],
+                       'time': row[2],
+                       'location': row[3]})
+    return jsonify({'timetable': timetable})
 
 
 @app.errorhandler(404)

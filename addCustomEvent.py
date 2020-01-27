@@ -12,9 +12,9 @@ def add_event(name_text, soc_text, loc_text, type_text, desc_text, date_text, ti
     # if count > 0:
     #     print('Skip adding this event...')
     # else:
-    c.execute("INSERT INTO events(name,society,location,type,description,date,time,url) VALUES ('%s','%s','%s','%s','%s',date('%s'),'%s','%s');" \
-              % (name_text,soc_text,loc_text,type_text,desc_text,date_text,time_text,url_text))
-    conn.commit()
+    # c.execute("INSERT INTO events(name,society,location,type,description,date,time,url) VALUES ('%s','%s','%s','%s','%s',date('%s'),'%s','%s');" \
+    #           % (name_text,soc_text,loc_text,type_text,desc_text,date_text,time_text,url_text))
+    # conn.commit()
     print('name: ' + name_text)
     print('society: ' + soc_text)
     print('location: ' + loc_text)
