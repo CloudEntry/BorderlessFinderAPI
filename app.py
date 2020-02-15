@@ -1,6 +1,7 @@
 #!flask/bin/python
 from flask import Flask, jsonify, abort, make_response, request
 # from flask_cors import CORS
+from datetime import datetime
 import sqlite3
 
 app = Flask(__name__)
@@ -10,7 +11,7 @@ app = Flask(__name__)
 @app.route('/api/v1.0/events', methods=['GET'])
 def get_events():
     events = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')  # /home/borderlessfinder/borderless_finder.db
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')  # /home/borderlessfinder/borderless_finder.db
     c = conn.cursor()
     c.execute("SELECT * FROM events order by date, time;")
     # select name, society, date, time, location, type, replace(description,X'0A',' '), url from events
@@ -31,7 +32,7 @@ def get_events():
 @app.route('/api/v1.0/searchevents/<search_text>', methods=['GET'])
 def search_events(search_text):
     events = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     query = "SELECT * FROM events where name like '%%%s%%' or society like '%%%s%%' order by date, time;" % (search_text, search_text)
     c.execute(query)
@@ -50,10 +51,20 @@ def search_events(search_text):
     return jsonify({'events': events})
 
 
+@app.route('/api/v1.0/eventscount', methods=['GET'])
+def get_events_count():
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
+    c = conn.cursor()
+    today = datetime.today().strftime('%Y-%m-%d')
+    c.execute("select count(id) from events where date >= date('%s');" % today)
+    count = c.fetchone()[0]
+    return jsonify({'count': count})
+
+
 @app.route('/api/v1.0/events/info/<int:event_id>', methods=['GET'])
 def get_event_detail(event_id):
     event_detail = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     c.execute("SELECT id, name, society, location, type, date, time, url, description FROM events where id = %s;" % str(event_id))
     # select name, society, date, time, location, type, replace(description,X'0A',' '), url from events
@@ -78,7 +89,7 @@ def create_event():
     if not request.json:    # or not 'name' in request.json:
         abort(400)
     # insert into database
-    conn2 = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn2 = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c2 = conn2.cursor()
     name_text = request.json['name']
     soc_text = request.json.get('society', "")
@@ -100,7 +111,7 @@ def create_event():
 def delete_event():
     if not request.json:
         abort(400)
-    conn2 = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn2 = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c2 = conn2.cursor()
     e_id = request.json['e_id']
     c2.execute("DELETE FROM events WHERE id = %s;" % e_id)
@@ -112,7 +123,7 @@ def delete_event():
 @app.route('/api/v1.0/events/<u_email>', methods=['GET'])
 def get_created_events(u_email):
     events = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     c.execute("SELECT * FROM events where creator = '%s' order by date, time;" % u_email)
     for row in c.fetchall():
@@ -134,7 +145,7 @@ def get_created_events(u_email):
 @app.route('/api/v1.0/users', methods=['GET'])
 def get_users():
     users = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     c.execute("SELECT * FROM users;")
     id_num = 0
@@ -159,7 +170,7 @@ def get_users():
 @app.route('/api/v1.0/user/<email>', methods=['GET'])
 def login(email):
     user = {}
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE email = '%s';" % str(email))
     for row in c.fetchall():
@@ -180,7 +191,7 @@ def login(email):
 
 @app.route('/api/v1.0/users', methods=['POST'])
 def create_users():
-    conn2 = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn2 = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c2 = conn2.cursor()
     email = request.json['email']
     fname = request.json['fname']
@@ -205,7 +216,7 @@ def create_users():
 @app.route('/api/v1.0/timetable/<c_code>', methods=['GET'])
 def get_timetable(c_code):
     timetable = []
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     c.execute("SELECT title, date, time, location FROM lecture_timetable where c_code = '%s' order by date, time;" % c_code)
     id_num = 0
@@ -221,7 +232,7 @@ def get_timetable(c_code):
 
 @app.route('/api/v1.0/saveevent', methods=['POST'])
 def save_event():
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     u_email = request.json['u_email']
     e_id = request.json['e_id']
@@ -240,7 +251,7 @@ def save_event():
 
 @app.route('/api/v1.0/savedevents/<u_email>', methods=['GET'])
 def get_saved_events(u_email):
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     c.execute("SELECT saved_events FROM users where email = '%s';" % u_email)
     row = c.fetchone()
@@ -252,7 +263,7 @@ def get_saved_events(u_email):
 
 @app.route('/api/v1.0/removesavedevent', methods=['POST'])
 def remove_saved_event():
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     u_email = request.json['u_email']
     e_id = request.json['e_id']

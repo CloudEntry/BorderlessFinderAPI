@@ -4,29 +4,30 @@ from selenium.webdriver.chrome.options import Options
 import time
 import sqlite3
 
-conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
-c = conn.cursor()
 
-c.execute("SELECT url FROM events WHERE url like '%%%s%%';" % 'liverpoolguild')
-for row in c.fetchall():
-    db_url = row[0]
-    print(db_url)
+def main(base_dir):
+    conn = sqlite3.connect(f'{base_dir}/borderless_finder.db')
+    c = conn.cursor()
 
-    options = Options()
-    options.add_experimental_option("detach", True)
-    options.add_argument("--window-position=0,0")
-    options.add_argument("--headless")
-    driver = webdriver.Chrome(executable_path=r'/Users/jackgee/Downloads/chromedriver', options=options)
-    driver.get(db_url)
-    time.sleep(4)
+    c.execute("SELECT url FROM events WHERE url like '%%%s%%';" % 'liverpoolguild')
+    for row in c.fetchall():
+        db_url = row[0]
+        print(db_url)
 
-    plain_text = driver.page_source
-    soup = BeautifulSoup(plain_text, 'lxml')
-    error_404 = soup.find('div', {'class', 'uc-page-not-found'})
-    if error_404:
-        print('Error 404')
-        c.execute("DELETE FROM events WHERE url = '%s';" % db_url)
-        conn.commit()
+        options = Options()
+        options.add_experimental_option("detach", True)
+        options.add_argument("--window-position=0,0")
+        options.add_argument("--headless")
+        driver = webdriver.Chrome(executable_path=r'/Users/jackgee/Downloads/chromedriver', options=options)
+        driver.get(db_url)
+        time.sleep(4)
 
+        plain_text = driver.page_source
+        soup = BeautifulSoup(plain_text, 'lxml')
+        error_404 = soup.find('div', {'class', 'uc-page-not-found'})
+        if error_404:
+            print('Error 404')
+            c.execute("DELETE FROM events WHERE url = '%s';" % db_url)
+            conn.commit()
 
-conn.close()
+    conn.close()

@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
 c = conn.cursor()
 
 thursdays = ['2020-01-30','2020-02-06','2020-02-13','2020-02-20','2020-02-27','2020-03-05','2020-03-12','2020-03-19', \
