@@ -2,7 +2,7 @@ import sqlite3
 
 
 def add_event(name_text, soc_text, loc_text, type_text, desc_text, date_text, time_text, url_text):
-    conn = sqlite3.connect('/Users/jackgee/Desktop/borderless_finder.db')
+    conn = sqlite3.connect('/Users/jackgee/Desktop/event-data/borderless_finder.db')
     c = conn.cursor()
     desc_text = desc_text.strip()
     print(url_text)
@@ -27,14 +27,14 @@ def add_event(name_text, soc_text, loc_text, type_text, desc_text, date_text, ti
     conn.close()
 
 
-name = 'MAPD 2020'
-society = 'Multidisciplinary Approaches to Political Discourse'
-location = 'University of Liverpool'
-event_type = 'Conference'
+name = 'Make a Game in 2 Hours'
+society = 'Game Developers Society'
+location = 'Elizabeth Gidney Room, The Guild'
+event_type = 'Society Taster Session'
 description = '''
-Following on from previous “Political Discourse - Multidisciplinary Approaches” conferences in London (2016) and Edinburgh (2018), we are pleased to announce MAPD 2020 (Multidisciplinary Approaches to Political Discourse) will take place in the Department of Communication and Media at the University of Liverpool on 25-26 June 2020.
+Follow along as we guide you through an interactive experience developing a short, creative, and fun puzzle game in GB Studio! You’ll be able to help decide on key aspects of the game, as well as have the chance to design your own levels! If you want to try following along and developing your own game idea as well, the software is free to download and we’ll be happy to try and help you out too.
 '''
-date = '2020-06-26'
-time = '00:00-00:00'
-url = 'https://www.liverpool.ac.uk/communication-and-media/events/mapd-2020/'
+date = '2020-02-03'
+time = '18:30-20:30'
+url = 'https://www.eventbrite.co.uk/e/make-a-game-in-2-hours-tickets-91664046631'
 add_event(name, society, location, event_type, description, date, time, url)

@@ -8,18 +8,18 @@ import os
 import shutil
 from datetime import datetime
 
-base_dir = '/Users/jackgee/Desktop/event-data'
+base_dir = '/Users/jackgee/Desktop'
 
 # perform backup
 today = datetime.today().strftime('%Y-%m-%d')
 os.mkdir(f'{base_dir}/backup-{today}')
 shutil.copy2(f'{base_dir}/borderless_finder.db', f'{base_dir}/backup-{today}')
-shutil.copy2(f'{base_dir}/events.txt', f'{base_dir}/backup-{today}')
-shutil.copy2(f'{base_dir}/events.xlsx', f'{base_dir}/backup-{today}')
+if os.path.exists(f'{base_dir}/events.txt'):
+    shutil.copy2(f'{base_dir}/events.txt', f'{base_dir}/backup-{today}')
 
 # remove old txt and excel files
-os.remove(f'{base_dir}/events.txt')
-os.remove(f'{base_dir}/events.xlsx')
+if os.path.exists(f'{base_dir}/events.txt'):
+    os.remove(f'{base_dir}/events.txt')
 
 # fetch new events, remove dead links and update detail changes in db
 soc.main(base_dir)
