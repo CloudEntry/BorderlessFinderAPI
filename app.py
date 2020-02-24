@@ -159,6 +159,20 @@ def get_users():
     id_num = 0
     for row in c.fetchall():
         id_num += 1
+        stats = {}
+        stats['aca_exp'] = row[13]
+        stats['art_exp'] = row[14]
+        stats['bus_exp'] = row[15]
+        stats['cha_exp'] = row[16]
+        stats['dan_exp'] = row[17]
+        stats['gam_exp'] = row[18]
+        stats['cul_exp'] = row[19]
+        stats['mus_exp'] = row[20]
+        stats['pol_exp'] = row[21]
+        stats['rel_exp'] = row[22]
+        stats['soc_exp'] = row[23]
+        stats['spo_exp'] = row[24]
+        stats['tra_exp'] = row[25]
         users.append({'id': id_num,
                       'email': row[0],
                       'fname': row[1],
@@ -173,19 +187,8 @@ def get_users():
                       'saved_events': row[10],
                       'organizer_freq': row[11],
                       'organizer_event_type': row[12],
-                      'aca_exp': row[13],
-                      'art_exp': row[14],
-                      'bus_exp': row[15],
-                      'cha_exp': row[16],
-                      'dan_exp': row[17],
-                      'gam_exp': row[18],
-                      'cul_exp': row[19],
-                      'mus_exp': row[20],
-                      'pol_exp': row[21],
-                      'rel_exp': row[22],
-                      'soc_exp': row[23],
-                      'spo_exp': row[24],
-                      'tra_exp': row[25]})
+                      'stats': stats})
+
     conn.close()
     return jsonify({'users': users})
 
